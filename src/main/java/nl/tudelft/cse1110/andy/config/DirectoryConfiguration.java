@@ -4,6 +4,7 @@ public class DirectoryConfiguration {
 
     private final String workingDir;
     private final String outputDir;
+    private String temporaryDir;
 
     public DirectoryConfiguration(String workingDir, String reportsDir) {
         this.workingDir = workingDir;
@@ -18,5 +19,8 @@ public class DirectoryConfiguration {
         return outputDir;
     }
 
+    public String getTemporaryDir() { return temporaryDir; }
+
+    public void setTemporaryDir(String temporaryDir) { this.temporaryDir = temporaryDir; }
 
 }

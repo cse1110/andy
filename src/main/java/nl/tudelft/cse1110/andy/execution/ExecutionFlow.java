@@ -1,5 +1,6 @@
 package nl.tudelft.cse1110.andy.execution;
 
+import nl.tudelft.cse1110.andy.config.DirectoryConfiguration;
 import nl.tudelft.cse1110.andy.execution.step.CompilationStep;
 import nl.tudelft.cse1110.andy.execution.step.GetRunConfigurationStep;
 import nl.tudelft.cse1110.andy.execution.step.OrganizeSourceCodeStep;
@@ -7,10 +8,17 @@ import nl.tudelft.cse1110.andy.execution.step.ReplaceClassloaderStep;
 import nl.tudelft.cse1110.andy.result.Result;
 import nl.tudelft.cse1110.andy.result.ResultBuilder;
 import nl.tudelft.cse1110.andy.writer.ResultWriter;
+import org.apache.commons.io.FileUtils;
 
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+
+import static nl.tudelft.cse1110.andy.utils.ClassUtils.extractPackageName;
+import static nl.tudelft.cse1110.andy.utils.FilesUtils.*;
 
 public class ExecutionFlow {
     private final Context ctx;
@@ -44,6 +52,8 @@ public class ExecutionFlow {
         } catch(Throwable t) {
             // in case something even totally unexpected happens, we log it.
             writer.uncaughtError(t);
+        } finally {
+            revertSourceCode();
         }
     }
 
@@ -59,5 +69,26 @@ public class ExecutionFlow {
         return Arrays.asList(new OrganizeSourceCodeStep(), new CompilationStep(), new ReplaceClassloaderStep(), new GetRunConfigurationStep());
     }
 
+    private void revertSourceCode() {
+        DirectoryConfiguration dirCfg = ctx.getDirectoryConfiguration();
+        if (dirCfg.getWorkingDir().startsWith("/var")) return;
+
+        try {
+            List<String> listOfFiles = filePathsAsString(getAllJavaFiles(dirCfg.getTemporaryDir()));
+            for (String pathOfJavaClass : listOfFiles) {
+                String content = new String(Files.readAllBytes(Paths.get(pathOfJavaClass)));
+
+                String packageName = extractPackageName(content);
+                String directory = dirCfg.getWorkingDir() + "/src/" + (pathOfJavaClass.contains("Test") ? "test/java/" : "main/java/");
+                String directoryName = concatenateDirectories(directory, packageName);
+
+                moveFile(pathOfJavaClass, directoryName, new File(pathOfJavaClass).getName());
+            }
+
+            FileUtils.deleteDirectory(new File(dirCfg.getTemporaryDir()));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
 }
