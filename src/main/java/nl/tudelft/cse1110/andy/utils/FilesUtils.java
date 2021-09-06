@@ -1,9 +1,11 @@
 package nl.tudelft.cse1110.andy.utils;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.commons.io.filefilter.RegexFileFilter;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -71,20 +73,24 @@ public class FilesUtils {
         return dir1 + (dir1.endsWith("/")?"":"/") + dir2;
     }
 
-    public static String findSolution(String workdir) {
+    public static String findSolution(String workdir) throws FileNotFoundException {
         return getAllJavaFiles(workdir)
-                .stream().filter(x -> x.getAbsolutePath().endsWith("Solution.java"))
+                .stream().filter(x -> x.getAbsolutePath().endsWith("Solution.java")
+                        || x.getAbsolutePath().contains("Test"))
                 .map(x -> x.getAbsolutePath())
                 .findFirst()
-                .get();
+                .orElseThrow(() -> new FileNotFoundException("Solution file does not exist."));
     }
 
-    public static String findLibrary(String workdir) {
+    public static String findLibrary(String workdir) throws FileNotFoundException {
         return getAllJavaFiles(workdir)
-                .stream().filter(x -> x.getAbsolutePath().endsWith("Library.java"))
+                .stream().filter(x -> x.getAbsolutePath().endsWith("Library.java")
+                        || (!x.getAbsolutePath().contains("Test") &&
+                            !x.getAbsolutePath().endsWith("Solution.java") &&
+                            !x.getAbsolutePath().endsWith("Configuration.java")))
                 .map(x -> x.getAbsolutePath())
                 .findFirst()
-                .get();
+                .orElseThrow(() -> new FileNotFoundException("Library file does not exist."));
     }
 
 
@@ -137,7 +143,7 @@ public class FilesUtils {
 
     public static void writeToFile(File destinationFile, String content) {
         try {
-            Files.writeString(destinationFile.toPath(), content);
+            FileUtils.writeStringToFile(destinationFile, content, (String) null);
         } catch (Exception ex) {
             throw new RuntimeException();
         }

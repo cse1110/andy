@@ -7,6 +7,8 @@ import nl.tudelft.cse1110.andy.config.RunConfiguration;
 import nl.tudelft.cse1110.andy.execution.ExecutionStep;
 import nl.tudelft.cse1110.andy.result.ResultBuilder;
 
+import java.io.FileNotFoundException;
+
 import static nl.tudelft.cse1110.andy.utils.FilesUtils.findSolution;
 
 public class RunCodeChecksStep implements ExecutionStep {
@@ -16,9 +18,12 @@ public class RunCodeChecksStep implements ExecutionStep {
         RunConfiguration runCfg = ctx.getRunConfiguration();
 
         CheckScript script = runCfg.checkScript();
-        script.runChecks(findSolution(dirCfg.getWorkingDir()));
-
-        result.logCodeChecks(script);
+        try {
+            script.runChecks(findSolution(dirCfg.getWorkingDir()));
+            result.logCodeChecks(script);
+        } catch (Exception e) {
+            result.genericFailure(this, e);
+        }
     }
 
     @Override

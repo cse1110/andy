@@ -4,12 +4,16 @@ import nl.tudelft.cse1110.andy.config.DirectoryConfiguration;
 import nl.tudelft.cse1110.andy.execution.Context;
 import nl.tudelft.cse1110.andy.execution.ExecutionStep;
 import nl.tudelft.cse1110.andy.result.ResultBuilder;
+import org.apache.commons.io.FileUtils;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 import static nl.tudelft.cse1110.andy.utils.ClassUtils.extractPackageName;
 import static nl.tudelft.cse1110.andy.utils.ClassUtils.packageToDirectory;
@@ -22,7 +26,7 @@ public class OrganizeSourceCodeStep implements ExecutionStep {
         DirectoryConfiguration dirCfg = ctx.getDirectoryConfiguration();
 
         try {
-            Arrays.stream(new File(dirCfg.getOutputDir()).listFiles((f, p) -> !p.endsWith("java"))).forEach(File::delete);
+            FileUtils.deleteDirectory(new File(dirCfg.getOutputDir()));
 
             List<String> listOfFiles = filePathsAsString(getAllJavaFiles(dirCfg.getWorkingDir()));
             for(String pathOfJavaClass : listOfFiles) {

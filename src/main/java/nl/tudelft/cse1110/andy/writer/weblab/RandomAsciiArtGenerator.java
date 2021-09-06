@@ -23,7 +23,6 @@ public class RandomAsciiArtGenerator {
     private File pickRandomAsciiArtFile() {
 
         String asciiDirPath = ResourceUtils.resourceFolder("congrats");
-        System.out.println(asciiDirPath);
         File asciiDir = new File(asciiDirPath);
 
         File[] listOfAscii = FilesUtils.getAllFiles(asciiDir);

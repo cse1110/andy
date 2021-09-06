@@ -18,8 +18,6 @@ import java.nio.file.Path;
 import static nl.tudelft.cse1110.andy.utils.ResourceUtils.resourceFolder;
 
 public abstract class IntegrationTestBase {
-    @TempDir
-    protected Path reportDir;
 
     @TempDir
     protected Path workDir;
@@ -38,7 +36,7 @@ public abstract class IntegrationTestBase {
 
         DirectoryConfiguration dirCfg = new DirectoryConfiguration(
                 workDir.toString(),
-                reportDir.toString()
+                workDir.toString() + "/output"
         );
 
         ctx.setDirectoryConfiguration(dirCfg);
