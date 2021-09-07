@@ -1,0 +1,19 @@
+name: package
+on: push
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v2
+      - name: Set up JDK 15
+        uses: actions/setup-java@v1
+        with:
+          java-version: 15
+      - name: Package Andy into JAR file with Maven
+        run: mvn clean compile assembly:single
+      - name: Upload the JAR file artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: andy.jar
+          path: '**/andy*.jar'
