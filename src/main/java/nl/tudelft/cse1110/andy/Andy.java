@@ -36,6 +36,7 @@ public class Andy {
     }
 
     private static void addCommandLineArguments() {
+        options.addOption("e", "exercise", true, "Exercise name in the assignments repo.");
         options.addOption("d", "directory", true, "Base directory of the exercise");
         options.addOption("o", "output", true, "Output directory of the exercise");
         options.addOption("f", "full-with-hints", false, "Run Andy completely");
@@ -49,6 +50,7 @@ public class Andy {
         addCommandLineArguments();
 
         CommandLine cmd = parser.parse(options, args);
+        if (cmd.hasOption('e')) return buildContext(cmd);
         if (!cmd.hasOption('d')) { System.out.println("Error: no base directory supplied, please use the flag -d.");   System.exit(-1); }
         if (!cmd.hasOption('o')) { System.out.println("Error: no output directory supplied, please use the flag -o."); System.exit(-1); }
 
@@ -72,10 +74,15 @@ public class Andy {
                 : Action.TESTS;
         Context ctx = new Context(action);
 
-        DirectoryConfiguration dirCfg = new DirectoryConfiguration(
-                (cmd == null) ? System.getenv("WORKING_DIR") : cmd.getOptionValue('d'),
-                (cmd == null) ? System.getenv("OUTPUT_DIR")  : cmd.getOptionValue('o')
-        );
+        DirectoryConfiguration dirCfg;
+        if (cmd == null) {
+            dirCfg = new DirectoryConfiguration(System.getenv("WORKING_DIR"), System.getenv("OUTPUT_DIR"));
+        } else {
+            dirCfg = (cmd.hasOption('e'))
+                   ? new DirectoryConfiguration(System.getProperty("user.dir") + "/assignments/" + cmd.getOptionValue('e'), System.getProperty("user.dir") + "/output/" + cmd.getOptionValue('e'))
+                   : new DirectoryConfiguration(cmd.getOptionValue('d'), cmd.getOptionValue('o'));
+        }
+
         ctx.setDirectoryConfiguration(dirCfg);
 
         return ctx;

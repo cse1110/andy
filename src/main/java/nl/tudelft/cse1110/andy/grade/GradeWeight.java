@@ -39,10 +39,10 @@ public class GradeWeight {
     }
 
     public static GradeWeight fromConfig(Map<String, Float> weights) {
-        float coverage = weights.get("coverage");
-        float mutation = weights.get("mutation");
-        float meta = weights.get("meta");
-        float codechecks = weights.get("codechecks");
+        float coverage   = weights.getOrDefault("coverage",   0.0f);
+        float mutation   = weights.getOrDefault("mutation",   0.0f);
+        float meta       = weights.getOrDefault("meta",       0.0f);
+        float codechecks = weights.getOrDefault("codechecks", 0.0f);
 
         return new GradeWeight(coverage, mutation, meta, codechecks);
     }
