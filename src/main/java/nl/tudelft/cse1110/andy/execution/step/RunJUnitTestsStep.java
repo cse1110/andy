@@ -1,14 +1,19 @@
 package nl.tudelft.cse1110.andy.execution.step;
 
+import net.jqwik.engine.JqwikTestEngine;
 import nl.tudelft.cse1110.andy.execution.Context;
 import nl.tudelft.cse1110.andy.execution.ExecutionStep;
 import nl.tudelft.cse1110.andy.result.ResultBuilder;
 import nl.tudelft.cse1110.andy.utils.ClassUtils;
+import org.junit.jupiter.engine.JupiterTestEngine;
+import org.junit.platform.engine.TestEngine;
+import org.junit.platform.engine.discovery.ClassSelector;
 import org.junit.platform.engine.reporting.ReportEntry;
 import org.junit.platform.launcher.Launcher;
 import org.junit.platform.launcher.LauncherDiscoveryRequest;
 import org.junit.platform.launcher.TestExecutionListener;
 import org.junit.platform.launcher.TestIdentifier;
+import org.junit.platform.launcher.core.LauncherConfig;
 import org.junit.platform.launcher.core.LauncherDiscoveryRequestBuilder;
 import org.junit.platform.launcher.core.LauncherFactory;
 import org.junit.platform.launcher.listeners.SummaryGeneratingListener;
@@ -16,6 +21,7 @@ import org.junit.platform.launcher.listeners.TestExecutionSummary;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.lang.reflect.Method;
 
 import static org.junit.platform.engine.discovery.DiscoverySelectors.selectClass;
 
@@ -36,7 +42,12 @@ public class RunJUnitTestsStep implements ExecutionStep {
             ByteArrayOutputStream output = new ByteArrayOutputStream();
             System.setOut(new PrintStream(output));
 
-            Launcher launcher = LauncherFactory.create();
+            LauncherConfig config = LauncherConfig.builder()
+                    .enableTestEngineAutoRegistration(false)
+                    .addTestEngines(new JupiterTestEngine(), new JqwikTestEngine())
+                    .build();
+
+            Launcher launcher = LauncherFactory.create(config);
             launcher.registerTestExecutionListeners(listener);
             launcher.registerTestExecutionListeners(additionalReportJUnitListener);
 

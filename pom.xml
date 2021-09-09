@@ -168,6 +168,11 @@
             <artifactId>commons-cli</artifactId>
             <version>1.4</version>
         </dependency>
+        <dependency>
+            <groupId>net.jqwik</groupId>
+            <artifactId>jqwik-engine</artifactId>
+            <version>1.5.1</version>
+        </dependency>
 
     </dependencies>
 
