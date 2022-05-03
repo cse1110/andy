@@ -8,7 +8,7 @@ def get_directories(basedir):
                                        and not dir.startswith('.')]
 
 # Compile Andy and store the `target` directory.
-os.system('mvn clean compile dependency:copy-dependencies')
+os.system('mvn -f andy/pom.xml clean compile dependency:copy-dependencies')
 target_dir = '/home/runner/work/andy/andy/target'
 home_dir = '/home/runner/work/andy/andy/assignments'
 
@@ -23,7 +23,7 @@ os.makedirs(os.environ['OUTPUT_DIR'],  exist_ok = True)
 
 # Build classpath
 mvndeps_file = os.path.join(os.environ['WORKING_DIR'], 'mvndeps.txt')
-os.system(f'mvn dependency:build-classpath -Dmdep.outputFile={mvndeps_file}')
+os.system(f'mvn -f andy/pom.xml dependency:build-classpath -Dmdep.outputFile={mvndeps_file}')
 classpath_string = 'target/classes:'
 with open(mvndeps_file, 'r') as mvndeps_f:
     classpath_string += mvndeps_f.read()

@@ -23,4 +23,4 @@ jobs:
         env:
           WEBLAB_CREDENTIALS: ${{ secrets.WEBLAB_CREDENTIALS }}
           WEBLAB_SELENIUM_HEADLESS: true
-        run: mvn -B test --file pom.xml -Dtest="selenium/*"
+        run: mvn -f andy/pom.xml -B test --file pom.xml -Dtest="selenium/*"
